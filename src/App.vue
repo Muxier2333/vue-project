@@ -8,19 +8,34 @@
     <el-container>
       <!-- 左侧菜单 -->
       <el-aside width="200px" class="app-aside">
-        <div class="aside-group-title">管理选项</div>
-        <el-menu
-          :default-active="activeMenu"
-          class="aside-menu"
-          @select="handleSelect"
-        >
-          <el-menu-item index="user">
-            <span>用户管理</span>
-          </el-menu-item>
-          <el-menu-item index="question">
-            <span>题目管理</span>
-          </el-menu-item>
-        </el-menu>
+        <div class="menu-group">
+          <div class="menu-group-title" @click="collapseOpen = !collapseOpen">
+            <el-icon><Setting /></el-icon>
+            <span>管理选项</span>
+            <el-icon class="menu-arrow">
+              <ArrowDown v-if="collapseOpen" />
+              <ArrowRight v-else />
+            </el-icon>
+          </div>
+          <transition name="fold">
+            <div v-show="collapseOpen" class="menu-sub-list">
+              <div
+                class="menu-sub-item"
+                :class="{ active: activeMenu === 'user' }"
+                @click="activeMenu = 'user'"
+              >
+                用户管理
+              </div>
+              <div
+                class="menu-sub-item"
+                :class="{ active: activeMenu === 'question' }"
+                @click="activeMenu = 'question'"
+              >
+                题目管理
+              </div>
+            </div>
+          </transition>
+        </div>
       </el-aside>
 
       <!-- 右侧内容 -->
@@ -35,18 +50,15 @@
 <script>
 import UserManage from "./views/element/UserManage.vue";
 import QuestionManage from "./views/element/QuestionManage.vue";
+import { Setting, ArrowDown, ArrowRight } from "@element-plus/icons-vue";
 
 export default {
-  components: { UserManage, QuestionManage },
+  components: { UserManage, QuestionManage, Setting, ArrowDown, ArrowRight },
   data() {
     return {
       activeMenu: "user",
+      collapseOpen: true,
     };
-  },
-  methods: {
-    handleSelect(index) {
-      this.activeMenu = index;
-    },
   },
 };
 </script>
@@ -80,23 +92,51 @@ body,
   background: #f5f7fa;
   border-right: 1px solid #e4e7ed;
   min-height: calc(100% - 60px);
+  padding-top: 10px;
 }
-.aside-group-title {
+.menu-group-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 20px;
+  height: 40px;
   font-size: 14px;
   color: #333;
-  padding: 18px 20px 10px;
+  cursor: pointer;
+  user-select: none;
 }
-.aside-menu {
-  border-right: none;
-  background: transparent;
+.menu-group-title:hover {
+  background: #ecf0f5;
 }
-.aside-menu .el-menu-item {
-  padding-left: 40px !important;
+.menu-arrow {
+  margin-left: auto;
+  font-size: 12px;
+}
+.menu-sub-list {
+  overflow: hidden;
+}
+.menu-sub-item {
+  padding: 0 20px 0 44px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 14px;
   color: #333;
+  cursor: pointer;
 }
-.aside-menu .el-menu-item.is-active {
+.menu-sub-item:hover {
+  background: #ecf0f5;
+}
+.menu-sub-item.active {
   color: #409eff;
-  background: transparent;
+}
+.fold-enter-active,
+.fold-leave-active {
+  transition: all 0.2s ease;
+}
+.fold-enter-from,
+.fold-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }
 .app-main {
   background: #fff;
